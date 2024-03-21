@@ -1,35 +1,34 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-import os
 
 app = Flask(__name__)
 
-# Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///test.db')
+# Hardcoded connection string for demonstration (replace placeholders with actual values)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://cwl21@llsdata:lindy101@llsdata.postgres.database.azure.com:5432/myappdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize SQLAlchemy
 db = SQLAlchemy(app)
 
-# Import models after db initialization to avoid circular import issues
-from models import User
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(40), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(40), nullable=False)
 
-@app.route('/')
-def index():
-    return "Hello, welcome to the Flask App!"
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        password = request.form.get('password')  # Remember to hash passwords in a real app
-
-        # Create a new User instance
-        new_user = User(name=name, email=email, phone=phone, password=password)
+        name = request.form['name']
+        email = request.form['email']
+        phone = request.form['phone']
+        password = request.form['password']
         
-        # Add to the database session and commit
+        new_user = User(name=name, email=email, phone=phone, password=password)
         db.session.add(new_user)
         db.session.commit()
 
@@ -41,5 +40,4 @@ def success():
     return 'Registration successful!'
 
 if __name__ == '__main__':
-    db.create_all()  # Create database tables
     app.run(debug=True)
