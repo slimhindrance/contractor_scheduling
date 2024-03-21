@@ -4,8 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 # Hardcoded connection string for demonstration (replace placeholders with actual values)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://cwl21%40llsdata:lindy101@llsdata.postgres.database.azure.com:5432/test'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'default-connection-string-from-azure')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
