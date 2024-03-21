@@ -1,10 +1,17 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for
-from models import db, User  # Ensure you have these models defined as per previous instructions
+import os
+from flask_sqlalchemy import SQLAlchemy
+from models import db, User  # Ensure your models.py defines db and User correctly
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'your-azure-database-connection-string'
+
+# Obtain the PostgreSQL connection string from environment variables
+connection_string = os.getenv('AZURE_POSTGRESQL_CONNECTIONSTRING')
+app.config['SQLALCHEMY_DATABASE_URI'] = connection_string
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy with the Flask app
 db.init_app(app)
 
 @app.route('/register', methods=['GET', 'POST'])
