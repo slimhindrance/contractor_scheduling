@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'a-very-secret-key'  # Change this in production
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Local SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://moybpnowxy:Lindy101!@llsscheduler-server.postgres.database.azure.com:5432/llsscheduler-database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
