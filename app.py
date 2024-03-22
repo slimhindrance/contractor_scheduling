@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Change this to a random secret key
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'  # Will replace with Azure SQL later
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://moybpnowxy@llsscheduler-server:Lindy101!@llsscheduler-server.postgres.database.azure.com:5432/llsscheduler-database'  # Will replace with Azure SQL later
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
