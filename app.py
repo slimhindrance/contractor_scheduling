@@ -1,10 +1,11 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 # Update with your actual PostgreSQL connection string
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://moybpnowxy@llsscheduler-server:lindy101@llsscheduler-server.postgres.database.azure.com/llsscheduler-database'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
