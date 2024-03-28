@@ -7,6 +7,7 @@ app = Flask(__name__)
 # Update with your actual PostgreSQL connection string
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://moybpnowxy@llsscheduler-server:lindy101@llsscheduler-server.postgres.database.azure.com/llsscheduler-database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['DEBUG'] = True
 db = SQLAlchemy(app)
 
 class User(db.Model):
