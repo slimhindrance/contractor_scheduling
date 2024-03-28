@@ -1,26 +1,17 @@
-<!-- templates/login.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Profile</title>
 </head>
 <body>
-    <h2>Login</h2>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    <form method="post">
-        Username: <input type="text" name="username" required><br>
-        Password: <input type="password" name="password" required><br>
-        <input type="submit" value="Login">
+    <h1>Profile</h1>
+    <form method="POST" action="{{ url_for('profile') }}">
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ user.email }}">
+        <label>Phone:</label>
+        <input type="text" name="phone" value="{{ user.phone }}">
+        <button type="submit">Update</button>
     </form>
-    <a href="{{ url_for('register') }}">Register</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
 </body>
 </html>
