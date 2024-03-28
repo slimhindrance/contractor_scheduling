@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -11,8 +12,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://cwl21:Lindy101@llspoc.post
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# Enable SQLAlchemy query logging for debugging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 class User(db.Model):
-    __tablename__ = 'users'  # Specifying the table name; SQLAlchemy will use the class name in lowercase if not specified
+    __tablename__ = 'users'  # Specifying the table name
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
@@ -31,9 +36,11 @@ def register():
             new_user = User(username=username, password=password)
             db.session.add(new_user)
             db.session.commit()
+            flash('Registration successful! Please log in.')
             return redirect(url_for('login'))
         return render_template('register.html')
     except SQLAlchemyError as e:
+        db.session.rollback()
         app.logger.error('Error during registration: %s', str(e))
         flash('A database error occurred. Please try again.')
         return redirect(url_for('register'))
@@ -59,10 +66,16 @@ def profile():
     if request.method == 'POST':
         user.email = request.form['email']
         user.phone = request.form['phone']
-        db.session.commit()
-        flash('Profile updated successfully.')
+        try:
+            db.session.commit()
+            flash('Profile updated successfully.')
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            app.logger.error('Error updating profile: %s', str(e))
+            flash('An error occurred. Please try again.')
     return render_template('profile.html', user=user)
 
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
