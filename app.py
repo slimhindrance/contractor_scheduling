@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -19,17 +20,22 @@ class User(db.Model):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists.')
-            return redirect(url_for('register'))
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        return redirect(url_for('login'))
-    return render_template('register.html')
+    try:
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            if User.query.filter_by(username=username).first():
+                flash('Username already exists.')
+                return redirect(url_for('register'))
+            new_user = User(username=username, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for('login'))
+        return render_template('register.html')
+    except SQLAlchemyError as e:
+        app.logger.error('Error during registration: %s', str(e))
+        flash('A database error occurred. Please try again.')
+        return redirect(url_for('register'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
